@@ -98,6 +98,7 @@ Read `branch` from the helper output:
 
   > "Estás en `<branch>`. ¿Qué hago?
   > - `pr` → crear PR (base = `<default_branch>`)
+  > - `pr develop` → crear PR a `develop`
   > - `pr target=<base>` → crear PR contra otra base
   > - `merge` → merge a `<default_branch>` con --no-ff
   > - `merge target=<base>` → merge a la base indicada con --no-ff
@@ -107,6 +108,7 @@ Read `branch` from the helper output:
 
   - **`no`** → finish and print confirmation.
   - **`pr`** → run `gh pr create --fill --base <default_branch>`, then print the PR URL.
+  - **`pr develop`** → run `gh pr create --fill --base develop`, then print the PR URL.
   - **`pr target=<base>`** → run `gh pr create --fill --base <base>`, then print the PR URL.
   - **`merge`** → run the **Merge sub-flow** below with `<default_branch>` as base.
   - **`merge target=<base>`** → run the **Merge sub-flow** below with `<base>` as base.

@@ -8,6 +8,11 @@ Thumbs.db
 *.swp
 *~
 
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
 # Logs / temp
 *.log
 *.tmp
