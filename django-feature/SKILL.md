@@ -73,7 +73,7 @@ Re-export: add `from .invoice import Invoice` and `"Invoice"` to `models/__init_
 
 ### Admin — `apps/<app>/admin/<entity>.py`
 
-Mandatory. Inherit `BaseModelAdmin`; register the model. See **django-conventions**.
+Mandatory. Inherit `BaseModelAdmin`; register the model. `BaseModelAdmin` handles showing the UUID `id` read-only on both the changelist and the change form, so the subclass doesn't repeat that. **Every ForeignKey on the model goes in `raw_id_fields`** — never `autocomplete_fields` or the default dropdown (see **django-conventions** for the rationale).
 
 ```python
 from django.contrib import admin
@@ -87,7 +87,7 @@ class InvoiceAdmin(BaseModelAdmin):
     list_display = ("number", "user", "amount", "status", "created_at")
     list_filter = ("status", "active")
     search_fields = ("number",)
-    autocomplete_fields = ("user",)
+    raw_id_fields = ("user",)  # every FK uses raw_id_fields — never autocomplete or default dropdown
 ```
 
 Re-export from `admin/__init__.py`.

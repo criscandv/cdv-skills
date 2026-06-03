@@ -538,11 +538,50 @@ from django.contrib import admin
 
 
 class BaseModelAdmin(admin.ModelAdmin):
-    \"\"\"Shared admin base: audit fields read-only, soft-delete visible in filters.\"\"\"
+    \"\"\"
+    Abstract admin base for models that inherit from BaseModel.
 
-    readonly_fields = ("id", "created_at", "updated_at")
-    list_filter = ("active",)
+    Centralises the house admin conventions for soft-delete models:
+    the UUID ``id`` is shown read-only in both the changelist and the change form,
+    and ``active`` / ``created_at`` / ``updated_at`` are appended automatically.
+    Subclasses must declare every ForeignKey in ``raw_id_fields`` (never
+    ``autocomplete_fields`` or the default dropdown) so large related tables
+    do not slow the admin down.
+    \"\"\"
+
+    list_display_base = ["active", "created_at"]
+    list_filter_base = ["active", "created_at"]
+    readonly_fields_base = ["id", "created_at", "updated_at"]
     ordering = ("-created_at",)
+
+    def get_list_display(self, request):
+        \"\"\"Show the UUID id first, then the subclass fields, then the base audit fields.\"\"\"
+        list_display = super().get_list_display(request)
+        if isinstance(list_display, tuple):
+            list_display = list(list_display)
+        return ["id", *list_display, *self.list_display_base]
+
+    def get_list_filter(self, request):
+        list_filter = super().get_list_filter(request)
+        if isinstance(list_filter, tuple):
+            list_filter = list(list_filter)
+        return list_filter + self.list_filter_base
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = super().get_readonly_fields(request, obj)
+        if isinstance(readonly_fields, tuple):
+            readonly_fields = list(readonly_fields)
+        return readonly_fields + self.readonly_fields_base
+
+    def get_fieldsets(self, request, obj=None):
+        \"\"\"Prepend a read-only \\"Identificador\\" section exposing the UUID on the change form.\"\"\"
+        fieldsets = super().get_fieldsets(request, obj)
+        if obj is None:
+            return fieldsets
+        already_shown = any("id" in (options.get("fields") or ()) for _name, options in fieldsets)
+        if already_shown:
+            return fieldsets
+        return [("Identificador", {"fields": ("id",)}), *fieldsets]
 """
 
 # middleware

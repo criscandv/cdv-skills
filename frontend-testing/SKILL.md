@@ -123,7 +123,7 @@ npm test            # run once (vitest)
 npm run test:watch  # watch mode during development
 ```
 
-Before reporting a task done, run the suite if any tested code was touched, and lint the touched paths. In many Next setups there's no separate typecheck — `next build` performs it.
+Before reporting a task done, run the suite if any tested code was touched, and lint the touched paths. Typecheck separately with `tsc --noEmit` (Vite/CRA); on a Next project, `next build` performs typechecking as part of the build, so there's no separate command unless the project adds one.
 
 ---
 

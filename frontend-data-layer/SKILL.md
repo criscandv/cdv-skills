@@ -27,7 +27,10 @@ All HTTP goes through **one** Axios instance, configured once. Every feature's `
 import axios from "axios";
 
 export const http = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  // Base URL from a build-time env var. Read it with the framework's convention:
+  //   Vite:  import.meta.env.VITE_API_URL
+  //   Next:  process.env.NEXT_PUBLIC_API_URL
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 http.interceptors.request.use((config) => {
@@ -82,7 +85,7 @@ export function useCreateInvoice() {
 
 - Mutations **invalidate** the affected query keys on success so the UI reflects the change without manual refetch wiring.
 - Don't mirror query results into `useState`/Zustand — read them where they're rendered; React Query already caches and shares them.
-- In Next Server Components you can prefetch into the cache and hydrate; see **nextjs-patterns**.
+- **(Next only)** In Server Components you can prefetch into the cache and hydrate; see **nextjs-patterns**. In Vite/CRA apps there's no server prefetch — fetch on mount via the query hook.
 
 ---
 
@@ -144,7 +147,7 @@ Streaming responses don't fit React Query's request/response cache cleanly — d
 
 ## Auth / session
 
-The common pattern: the backend issues a JWT on login; the frontend stores it via the session layer (e.g. NextAuth with a credentials provider and JWT strategy, verifying with a server-side secret); the Axios request interceptor attaches it as `Authorization: Bearer <token>`; and a `401` / "not authenticated" response triggers logout through the event bus. Session-shape and the exact provider are **project-specific** — read the project's `docs/`/`AGENTS.md`. The reusable rule: **token attachment and 401 handling live in the Axios interceptors**, not scattered across calls.
+The common pattern: the backend issues a JWT on login; the frontend stores it via a session layer (a custom auth provider hook in a Vite/CRA app, NextAuth's credentials provider in a Next app) and exposes a way to read the token; the Axios request interceptor attaches it as `Authorization: Bearer <token>`; and a `401` / "not authenticated" response triggers logout through the event bus. Session shape and the exact provider are **project-specific** — read the project's `docs/`/`AGENTS.md`. The reusable rule: **token attachment and 401 handling live in the Axios interceptors**, not scattered across calls.
 
 ---
 

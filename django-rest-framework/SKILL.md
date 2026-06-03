@@ -205,6 +205,7 @@ Key points:
 - **Return `None` when the header is absent**, not an error — that lets DRF fall through to the next authenticator (JWT) so the same view can serve both authenticated users and API-key callers.
 - **Compare with `hmac.compare_digest`**, never `==` — constant-time comparison avoids leaking the key through timing.
 - The key comes from an env var (`API_KEY = config("API_KEY", default="")`); never hardcode it. Gate the public endpoint with a permission that accepts the API-key principal.
+- **Register the class as part of the baseline, even if the project has no public endpoints yet.** Leaving `API_KEY=""` in env effectively disables the path (no header value can match an empty expected key), but keeping the authenticator in `DEFAULT_AUTHENTICATION_CLASSES` means a future public endpoint needs zero settings changes — just set the env var. Removing the class on the grounds that "we don't use it now" creates a hidden migration cost the day you do need it.
 - For multiple rotating keys or per-client keys, prefer the managed `djangorestframework-api-key` package (hashed keys in the DB) over a single shared secret.
 
 ---

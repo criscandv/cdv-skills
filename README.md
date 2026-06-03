@@ -56,6 +56,14 @@ Conventions for building frontends. They trigger automatically when relevant.
 | `frontend-data-layer` | React Query (server state) vs Zustand (UI state), the single Axios instance + interceptors, SSE streaming, auth/session, mitt events. |
 | `frontend-testing` | vitest + Testing Library + jsdom + user-event + MSW, colocated tests, query by role/label, mock HTTP at the network. |
 
+### Design & Content — references (auto-invoked)
+
+| Skill | Description |
+|-------|-------------|
+| `ui-ux` | Design expert for screens with no mockup — hierarchy, palette (OKLCH + WCAG AA contrast), type scale, 4/8-pt spacing, layout patterns, states (default/hover/focus/loading/empty/error), accessibility, design tokens as the vocabulary that flows into Tailwind. Framework-agnostic. |
+| `tailwindcss-v4` | Tailwind CSS v4 expert: CSS-first config via `@theme`, custom utilities/variants (`@utility`, `@custom-variant`), container queries, OKLCH colours, v3 → v4 migration. **Always consults Context7 before answering** — v4's API moved significantly. |
+| `copywriting` | Microcopy expert: CTAs, error messages, empty states, headlines, onboarding. Writes in the language of the surrounding interface, picks voice/tone, follows length-by-surface caps, avoids filler and faux-friendly chatter. |
+
 ### Actions (slash-invoked)
 
 | Skill | Slash command | Description |
@@ -63,6 +71,7 @@ Conventions for building frontends. They trigger automatically when relevant.
 | `django-new-api` | `/django-new-api` | Scaffold a new Django + DRF API project from scratch with the full baseline wired (settings split, custom user, abstracts, middleware, exceptions, pagination, renderer, dual auth, drf-spectacular, ruff/pre-commit/pytest). |
 | `django-feature` | `/django-feature` | Add a complete vertical slice for a new entity (model, admin, serializer, view, urls, factory, tests, migration) to an existing project, test-first. |
 | `django-normalize` | `/django-normalize` | Audit an existing project against the conventions and bring it up to standard incrementally and safely (additive fixes first, data-risk migrations last with confirmation). |
+| `frontend-normalize` | `/frontend-normalize` | Audit an existing JS/TS/React frontend (Vite/Next/CRA) against the conventions and normalize incrementally — additive fixes first (single Axios instance, MSW, alias, strict TS), structural moves (feature modules, kebab-case, named exports) confirmed, risky refactors (default→named codemod, JS→TS, routing/state migrations) only with explicit sign-off. |
 | `project-docs` | `/project-docs` | Create or update a project's `docs/` set (ARCHITECTURE, WORKFLOW, COMMANDS, DESIGN, ONBOARDING) by interviewing the user. Language- and framework-agnostic. |
 | `agent-instructions` | `/agent-instructions` | Create or update a repo's agent entry-point files: AGENTS.md (canonical router into `docs/`) and CLAUDE.md (thin pointer + Claude-specific directives). Language- and framework-agnostic. |
 

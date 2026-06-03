@@ -95,7 +95,7 @@ Rules that make this work:
 - **One class per file.** Each `Model`, `Serializer`, `ViewSet`, `APIView`, `ModelAdmin` lives in its own file named after the entity. Group only when entities are inseparable (a model and its through-table), and justify it.
 - **Re-export from `__init__.py`.** Every package exposes its public symbols so callers write `from apps.api.models import Worker` without knowing the file. Keep `__init__.py` a flat list of imports with no logic.
 - **Abstract/base classes go in an `abstracts/` subfolder** of their package — `models/abstracts/`, `serializers/abstracts/`, `views/abstracts/`, `admin/abstracts/`. Re-export them up through `abstracts/__init__.py` and then the package `__init__.py` so the short import form works.
-- **`lib/` is for utilities, not parent classes.** Helpers, validators, formatters, third-party adapters scoped to one app. A class meant to be inherited belongs in `abstracts/`, never `lib/`.
+- **`lib/` is for utilities, not parent classes.** Helpers, validators, formatters, third-party adapters scoped to one app. A class meant to be inherited belongs in `abstracts/`, never `lib/`. **Cross-cutting infrastructure with its own identity also stays out of `lib/`** — it lives in its own named package next to it: the **exception handler + domain exceptions** go in `exceptions/`, the **authentication classes** in `authentication/`, custom **paginators** in `pagination/`, custom **renderers** in `renderers/`, middleware in `middleware/`. If you find yourself with a `lib/exception_handler.py` or a `lib/api_key_auth.py`, that's a sign the file is in the wrong package — promote it.
 - **Create `abstracts/` on demand** — don't pre-create empty folders. The first abstract for a package is what brings the folder into existence.
 
 ---
@@ -222,7 +222,12 @@ A `RequestContextMiddleware` resolves the authenticated user (via JWT) and attac
 
 ## Admin — always
 
-Creating a model without registering it in the Django admin is incomplete work. Admin classes live in `admin/<entity>.py`, re-exported from `admin/__init__.py`, and inherit from a shared `BaseModelAdmin` (in `admin/abstracts/`) that centralises `readonly_fields` for `created_at`/`updated_at` and soft-delete handling. Configure at minimum `list_display`, `list_filter`, `search_fields`, `ordering`; add `autocomplete_fields` for FKs to large tables.
+Creating a model without registering it in the Django admin is incomplete work. Admin classes live in `admin/<entity>.py`, re-exported from `admin/__init__.py`, and inherit from a shared `BaseModelAdmin` (in `admin/abstracts/`) that centralises `readonly_fields` for `created_at`/`updated_at`, `id`, and soft-delete handling. Configure at minimum `list_display`, `list_filter`, `search_fields`, `ordering`.
+
+Two admin rules are non-negotiable across every model:
+
+- **Always show the UUID `id` (read-only) in both the changelist and the change form.** Operators routinely need a record's id to correlate it with logs, support tickets, external integrations and URLs — and on a UUID PK that id is not visible anywhere else by default. `BaseModelAdmin` handles this automatically by prepending `id` to `get_list_display`, including it in `readonly_fields`, and prepending an "Identificador" fieldset to the change form. Admins that extend a different base (e.g. the user admin inheriting Django's `UserAdmin`) add the same handling explicitly.
+- **Every ForeignKey goes in `raw_id_fields` — never `autocomplete_fields`, never the default dropdown.** The raw-id widget renders a lightweight lookup popup that fetches one record at a time; `autocomplete_fields` and the default `<select>` load related rows on each admin page render, which becomes painful as the target table grows (and you find out about the slowdown in production, not in dev). Pay the upfront cost of a slightly less polished UI to avoid the runtime cost — it's the right trade for a back-office tool. Apply this rule even to FKs that currently point to small tables; "small" rarely stays small.
 
 ---
 
