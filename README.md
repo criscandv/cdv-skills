@@ -1,93 +1,143 @@
 # cdv-skills
 
-Personal collection of [Claude Code](https://docs.claude.com/en/docs/claude-code) skills.
+Personal collection of [Claude Code](https://docs.claude.com/en/docs/claude-code) skills, grouped by technology.
 
-Skills extend Claude Code with custom workflows. Each skill lives in its own directory with a `SKILL.md` file containing instructions and metadata.
-
-## Structure
-cdv-skills/
-├── install.sh          # Symlinks each skill into ~/.claude/skills/
-├── gpush/              # Smart git push with PR and merge support
-└── ...                 # More skills added over time
+Skills extend Claude with custom workflows and domain knowledge. Each skill lives in its own directory with a `SKILL.md` containing metadata (frontmatter) and instructions.
 
 ## Installation
 
-Clone the repo and run the installer:
+Install every skill in this repo with [Vercel's `npx skills` toolkit](https://github.com/vercel/skills):
 
 ```bash
-git clone git@github.com:<your-username>/cdv-skills.git ~/Development/cdv-skills
-cd ~/Development/cdv-skills
-./install.sh
+npx skills add https://github.com/criscandv/cdv-skills.git
 ```
 
-The installer creates a symlink from each skill directory to `~/.claude/skills/<skill-name>`. Edits in the repo are reflected instantly — no reinstall needed.
+That walks the repo, finds every directory with a `SKILL.md`, and registers it. Re-run the command after a `git pull` to pick up updates.
+
+## Structure
+
+```
+cdv-skills/
+├── README.md
+├── django/                  # Django + DRF backend conventions and actions
+│   ├── django-conventions/
+│   ├── django-orm-patterns/
+│   ├── django-rest-framework/
+│   ├── django-cbv-patterns/
+│   ├── django-testing/
+│   ├── django-new-api/
+│   ├── django-feature/
+│   └── django-normalize/
+├── python/                  # Python ecosystem (uv, ruff, pre-commit, pytest)
+│   └── python-tooling/
+├── frontend-core/           # Framework-agnostic JS / TS / testing conventions
+│   ├── frontend-conventions/
+│   ├── frontend-data-layer/
+│   ├── frontend-testing/
+│   ├── frontend-normalize/
+│   └── typescript-patterns/
+├── react/                   # React ecosystem (React + Next.js + Vite SPA + TanStack Router)
+│   ├── react-patterns/
+│   ├── react-spa/
+│   ├── nextjs-patterns/
+│   └── tanstack-router/
+├── astro/                   # Astro framework
+│   └── astro/
+├── tailwind/                # Tailwind CSS
+│   └── tailwindcss-v4/
+├── http/                    # HTTP / network requests
+│   └── fetch/
+├── design/                  # Design and content
+│   ├── ui-ux/
+│   └── copywriting/
+└── workflow/                # Git, agent meta-files, project documentation
+    ├── gpush/
+    ├── agent-instructions/
+    └── project-docs/
+```
+
+Categories with a single skill (`astro/astro/`, `tailwind/tailwindcss-v4/`, etc.) are deliberate placeholders — new skills for the same technology drop into the same folder without reorganising the repo.
 
 ## Skills
 
-### Git
-
-| Skill | Slash command | Description |
-|-------|---------------|-------------|
-| `gpush` | `/gpush` | Stages changes, writes a Conventional Commits message in English, pushes the current branch, and offers PR or merge to base. |
-
-### Django / DRF — references (auto-invoked)
-
-These encode the conventions for building Django backends as REST APIs. They trigger automatically when relevant.
+### `django/` — Django + DRF backend
 
 | Skill | Description |
 |-------|-------------|
-| `django-conventions` | The rulebook: UUID PKs, soft-delete BaseModel, abstracts/ folders, owner FK, middleware, exception handler + response envelope, custom pagination, dual auth, type hints, mandatory admin/tests/API docs. Points to the layer skills below. |
+| `django-conventions` | The Django rulebook: UUID PKs, soft-delete `BaseModel`, `abstracts/` folders, owner FK, custom pagination, dual auth, mandatory admin/tests/API docs. |
 | `django-orm-patterns` | Models layer: abstract bases, managers, soft-delete, UUID, owner FK, queries, transactions/savepoints, safe migrations. |
-| `django-rest-framework` | Serialization + API infra: serializers, validation, JWT + API-key auth, permissions, filtering, custom pagination, domain exceptions + global handler, consistent response renderer, drf-spectacular. |
-| `django-cbv-patterns` | View layer: ViewSet vs APIView vs generics, base classes/mixins, `@action` with `url_path`, get_queryset/perform_create. |
-| `django-testing` | pytest + factory-boy, fixtures, the TDD loop, what to assert per layer, coverage. |
-| `python-tooling` | uv, ruff, pre-commit, pytest config, pyproject.toml. Language tooling, not Django-specific. |
+| `django-rest-framework` | Serialization + API infra: serializers, validation, JWT + API-key auth, permissions, custom pagination, domain exceptions + global handler, consistent response renderer, drf-spectacular. |
+| `django-cbv-patterns` | View layer: ViewSet vs APIView vs generics, base classes, `@action` with `url_path`. |
+| `django-testing` | pytest + factory-boy, fixtures, the TDD loop, what to assert per layer. |
+| `django-new-api` | `/django-new-api` — scaffold a new Django + DRF API from scratch with the full baseline wired. |
+| `django-feature` | `/django-feature` — add a complete vertical slice (model + admin + serializer + view + urls + tests + migration), test-first. |
+| `django-normalize` | `/django-normalize` — audit an existing project against the conventions and apply fixes incrementally and safely. |
 
-### Frontend (JS / TS / React / Next.js) — references (auto-invoked)
-
-Conventions for building frontends. They trigger automatically when relevant.
+### `python/` — Python ecosystem
 
 | Skill | Description |
 |-------|-------------|
-| `frontend-conventions` | The rulebook: named exports, function vs arrow, kebab-case, no casting, type over interface, string unions, object params, `@/` alias, clsx/cn, no drive-by refactors, brace/spacing rules. Points to the layer skills below. |
-| `typescript-patterns` | type vs interface, type-only imports, unions over enums, guards over casts, `keyof typeof`, `ComponentProps`/`PropsWithChildren`, no speculative generics. |
-| `react-patterns` | React 19 components/hooks, "you might not need an Effect", effect deps, `useMemo`/`useCallback` discipline, refs as props, keys, state shape. |
-| `nextjs-patterns` | App Router: route groups, server vs client components, route handlers, `NEXT_PUBLIC_` env vars, dynamic imports for SSR-unsafe libs, metadata. |
-| `frontend-data-layer` | React Query (server state) vs Zustand (UI state), the single Axios instance + interceptors, SSE streaming, auth/session, mitt events. |
+| `python-tooling` | uv, ruff, pre-commit, pytest, `pyproject.toml`. Language tooling, not Django-specific. |
+
+### `frontend-core/` — JS / TS / testing conventions
+
+| Skill | Description |
+|-------|-------------|
+| `frontend-conventions` | The frontend rulebook: named exports, function vs arrow, kebab-case, no casting, `type` over `interface`, `@/` alias, no drive-by refactors. |
+| `typescript-patterns` | `type` vs `interface`, type-only imports, unions over enums, guards over casts, `keyof typeof`, `ComponentProps`/`PropsWithChildren`. |
+| `frontend-data-layer` | React Query (server state) vs Zustand (UI state), single Axios instance + interceptors, SSE streaming, auth/session, mitt events. |
 | `frontend-testing` | vitest + Testing Library + jsdom + user-event + MSW, colocated tests, query by role/label, mock HTTP at the network. |
+| `frontend-normalize` | `/frontend-normalize` — audit an existing JS/TS/React frontend (Vite/Next/CRA) and normalize incrementally. |
 
-### Design & Content — references (auto-invoked)
-
-| Skill | Description |
-|-------|-------------|
-| `ui-ux` | Design expert for screens with no mockup — hierarchy, palette (OKLCH + WCAG AA contrast), type scale, 4/8-pt spacing, layout patterns, states (default/hover/focus/loading/empty/error), accessibility, design tokens as the vocabulary that flows into Tailwind. Framework-agnostic. |
-| `tailwindcss-v4` | Tailwind CSS v4 expert: CSS-first config via `@theme`, custom utilities/variants (`@utility`, `@custom-variant`), container queries, OKLCH colours, v3 → v4 migration. **Always consults Context7 before answering** — v4's API moved significantly. |
-| `copywriting` | Microcopy expert: CTAs, error messages, empty states, headlines, onboarding. Writes in the language of the surrounding interface, picks voice/tone, follows length-by-surface caps, avoids filler and faux-friendly chatter. |
-
-### Astro & HTTP — references (auto-invoked)
+### `react/` — React ecosystem
 
 | Skill | Description |
 |-------|-------------|
-| `astro` | Astro web framework expert: pages, components, layouts, content collections, islands (`client:*`), SSR adapters, View Transitions, `astro:assets`, the CLI. **Always consults Context7 before answering** (Astro moves between minor releases). Ensures the `@/*` path alias is configured (creates it if missing). Defers styling to tailwindcss-v4 and HTTP requests to fetch. |
-| `fetch` | HTTP requests with the Web Fetch API: request shape, response parsing, the status-vs-network-error distinction, AbortController for timeouts/cancellation, retries with exponential backoff, auth headers, server vs client context, the standard response envelope, TypeScript at the boundary. Works in browser, Astro frontmatter, Next Server Components, Node, edge runtimes. |
+| `react-patterns` | React 19 components/hooks, "you might not need an Effect", effect deps, `useMemo`/`useCallback` discipline, refs as props, keys, state shape. |
+| `react-spa` | Vite + React SPA setup (no Next.js): `@/*` alias in both `tsconfig.json` AND `vite.config.ts`, typed `import.meta.env.VITE_*`, project structure (`src/features`, `src/routes`, `src/components/ui`, `src/lib`), `main.tsx` + `index.html` essentials. |
+| `nextjs-patterns` | Next.js App Router: route groups, server vs client components, route handlers, `NEXT_PUBLIC_` env vars, dynamic imports for SSR-unsafe libs, metadata. |
+| `tanstack-router` | Type-safe SPA router: file-based routing with the Vite plugin, `createFileRoute`, search params validated with Zod, route loaders integrated with React Query, `beforeLoad` auth guards, type-safe `<Link>`/`useNavigate`. **Always consults Context7 before answering**. |
 
-### Actions (slash-invoked)
+### `astro/` — Astro framework
+
+| Skill | Description |
+|-------|-------------|
+| `astro` | Astro expert: pages, components, layouts, content collections, islands (`client:*`), SSR adapters, View Transitions, `astro:assets`. **Always consults Context7 before answering** and ensures the `@/*` alias is configured. |
+
+### `tailwind/` — Tailwind CSS
+
+| Skill | Description |
+|-------|-------------|
+| `tailwindcss-v4` | Tailwind v4 expert: CSS-first config via `@theme`, custom utilities/variants, container queries, OKLCH colours, v3 → v4 migration. **Always consults Context7 before answering** — v4's API moved significantly. |
+
+### `http/` — Network requests
+
+| Skill | Description |
+|-------|-------------|
+| `fetch` | HTTP requests with the Web Fetch API: request shape, status-vs-network errors, AbortController for timeouts/cancellation, retries with exponential backoff, auth headers, server vs client context, standard response envelope, TypeScript at the boundary. |
+
+### `design/` — Design and content
+
+| Skill | Description |
+|-------|-------------|
+| `ui-ux` | Design expert for screens with no mockup — hierarchy, palette (OKLCH + WCAG AA), type scale, 4/8-pt spacing, layout patterns, states, accessibility, design tokens that flow into Tailwind. |
+| `copywriting` | Microcopy expert: CTAs, errors, empty states, headlines, onboarding. Writes in the language of the surrounding interface; picks voice/tone; avoids filler and faux-friendly chatter. |
+
+### `workflow/` — Git, agent meta-files, project docs
 
 | Skill | Slash command | Description |
 |-------|---------------|-------------|
-| `django-new-api` | `/django-new-api` | Scaffold a new Django + DRF API project from scratch with the full baseline wired (settings split, custom user, abstracts, middleware, exceptions, pagination, renderer, dual auth, drf-spectacular, ruff/pre-commit/pytest). |
-| `django-feature` | `/django-feature` | Add a complete vertical slice for a new entity (model, admin, serializer, view, urls, factory, tests, migration) to an existing project, test-first. |
-| `django-normalize` | `/django-normalize` | Audit an existing project against the conventions and bring it up to standard incrementally and safely (additive fixes first, data-risk migrations last with confirmation). |
-| `frontend-normalize` | `/frontend-normalize` | Audit an existing JS/TS/React frontend (Vite/Next/CRA) against the conventions and normalize incrementally — additive fixes first (single Axios instance, MSW, alias, strict TS), structural moves (feature modules, kebab-case, named exports) confirmed, risky refactors (default→named codemod, JS→TS, routing/state migrations) only with explicit sign-off. |
-| `project-docs` | `/project-docs` | Create or update a project's `docs/` set (ARCHITECTURE, WORKFLOW, COMMANDS, DESIGN, ONBOARDING) by interviewing the user. Language- and framework-agnostic. |
-| `agent-instructions` | `/agent-instructions` | Create or update a repo's agent entry-point files: AGENTS.md (canonical router into `docs/`) and CLAUDE.md (thin pointer + Claude-specific directives). Language- and framework-agnostic. |
+| `gpush` | `/gpush` | Stages changes, writes a Conventional Commits message (with type heuristics, BREAKING CHANGE support, monorepo scope, footers and pre-commit hook re-stage), pushes the current branch, offers PR or merge to base. |
+| `agent-instructions` | `/agent-instructions` | Create or update a repo's `AGENTS.md` (canonical router into `docs/`) and `CLAUDE.md` (thin pointer + Claude-specific directives). |
+| `project-docs` | `/project-docs` | Create or update a project's `docs/` set (`ARCHITECTURE`, `WORKFLOW`, `COMMANDS`, `DESIGN`, `ONBOARDING`) by interviewing the user. Language- and framework-agnostic. |
 
 ## Adding a new skill
 
-1. Create a new directory at the repo root: `mkdir my-skill`
-2. Add a `SKILL.md` with frontmatter (`name`, `description`, etc.) and instructions.
-3. Run `./install.sh` to symlink it into `~/.claude/skills/`.
-4. Commit and push.
+1. Pick the category folder where the skill belongs (or create a new one if no existing category fits).
+2. Create a new directory inside it: `mkdir <category>/my-skill`.
+3. Add `SKILL.md` with frontmatter (`name`, `description`, optional `disable-model-invocation`) and instructions. Keep `SKILL.md` under ~500 lines; move long reference material into separate files.
+4. Optional: a `scripts/` subfolder for executable helpers, an `assets/` subfolder for templates.
+5. Commit and push. After your next `git pull`, re-run `npx skills add https://github.com/criscandv/cdv-skills.git` on every machine to pick up the new skill.
 
 ## License
 

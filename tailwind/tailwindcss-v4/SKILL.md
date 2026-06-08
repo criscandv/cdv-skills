@@ -94,6 +94,48 @@ For both, query Context7 with `"@utility"` / `"@custom-variant"` for the canonic
 
 ---
 
+## Animations — `--animate-*` + `@keyframes` in `@theme`
+
+v4 brings keyframe animations into the same `@theme`-driven workflow as colours and spacing. The plugin you may have been used to (`tailwindcss-animate`) is **not needed**: declare an animation token, declare its `@keyframes` alongside, and the matching `animate-<name>` utility class is generated automatically.
+
+```css
+@theme {
+  --animate-fade-in:   fade-in   0.2s ease-out;
+  --animate-fade-out:  fade-out  0.2s ease-in;
+  --animate-slide-in:  slide-in  0.3s ease-out;
+  --animate-slide-out: slide-out 0.3s ease-in;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes fade-out {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+  }
+  @keyframes slide-in {
+    from { transform: translateY(-0.5rem); opacity: 0; }
+    to   { transform: translateY(0);       opacity: 1; }
+  }
+  @keyframes slide-out {
+    from { transform: translateY(0);       opacity: 1; }
+    to   { transform: translateY(-0.5rem); opacity: 0; }
+  }
+}
+```
+
+Use them like any utility: `<div class="animate-fade-in">…</div>`.
+
+Notes:
+
+- **Declare the `@keyframes` rules inside (or right next to) the `@theme` block** so they're emitted into the bundle when the corresponding `--animate-*` token is referenced.
+- **Name the token after the motion, not the use case** — `slide-in` reads well in components; `dialog-enter` over-couples the token to a single consumer.
+- **Pair with `@starting-style`** for entry animations on elements that mount (popovers, dialogs). Verify the exact syntax in Context7 — it landed late in v4 and may evolve.
+- **Respect `prefers-reduced-motion`** at the component level (a small media-query guard or a `motion-safe:animate-fade-in` pattern); see **ui-ux** for the accessibility rationale.
+- **Drop `tailwindcss-animate`** if you migrated from v3 — it's redundant under v4 and the two systems will fight if both are loaded.
+
+---
+
 ## Patterns that hold across versions
 
 - **Compose, don't abstract prematurely.** A button with `inline-flex items-center gap-2 rounded-md bg-brand-500 px-4 py-2 text-white hover:bg-brand-600 focus-visible:ring-2 focus-visible:ring-brand-500` is fine; only extract a component or a utility when the same string repeats in 3+ places with meaningful identity.

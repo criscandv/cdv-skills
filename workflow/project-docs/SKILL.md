@@ -36,6 +36,9 @@ Before interviewing, read what the repo already tells you so questions are infor
 - Detect the stack from manifests: `pyproject.toml` / `requirements.txt`, `package.json`, `go.mod`, `Cargo.toml`, `Gemfile`, etc.
 - Detect structure: top-level folders, whether it's a monorepo (multiple sub-projects), where source/tests live.
 - Detect tooling: linters/formatters, test runners, `.pre-commit-config.yaml`, CI files, `Dockerfile` / `docker-compose`, `Makefile` / task runner.
+- **Detect spec/workflow tools** that own a piece of the process and shape what `WORKFLOW.md` should say:
+  - `openspec/config.yaml` (and `openspec/{specs,changes}/`) → the project uses **OpenSpec**. The `Planning` section of `WORKFLOW.md` describes the `/opsx:propose` → `/opsx:apply` → `/opsx:archive` cycle with artefacts under `openspec/changes/<name>/`. **Do not propose creating `docs/specs/`**; do not write "plans live in `docs/`". If the existing `WORKFLOW.md` references `docs/specs/`, it is stale — replace it.
+  - Other planning tools (`.taskmaster/`, `.specstory/`, etc.) — same logic: the tool's workflow owns the planning section.
 - Note what `docs/` already exists — this skill **updates** rather than clobbers; preserve content that's still accurate.
 
 Summarise what you inferred and confirm it with the user; that turns the interview into corrections rather than dictation.
@@ -46,7 +49,7 @@ Ask only what you couldn't infer. Group questions; don't overwhelm. The informat
 
 **For ARCHITECTURE** — what the project does (one paragraph); the components and how they communicate; the stack per component; the repo layout; key code conventions (naming, file organisation, language-specific rules) the team enforces.
 
-**For WORKFLOW** — branching model and naming; whether planning/specs precede work; testing approach (TDD? coverage target?); how changes are verified before merge; commit message convention; PR and merge process; any hard "never do this" rules; whether external-docs lookups or specific agents/tools are part of the process.
+**For WORKFLOW** — branching model and naming; **the planning workflow** (if a tool like OpenSpec is installed, that tool *is* the planning workflow — describe its cycle; otherwise ask the user what process they want); testing approach (TDD? coverage target?); how changes are verified before merge; commit message convention; PR and merge process; any hard "never do this" rules; whether external-docs lookups or specific agents/tools are part of the process.
 
 **For COMMANDS** — setup/install, run (dev + prod), test, lint/format, build, database/migrations, deploy — the exact commands, per component and per run mode (native vs Docker).
 
@@ -60,7 +63,7 @@ Write each file from the gathered facts — not generic boilerplate. Concrete co
 
 **ARCHITECTURE.md**: one-line purpose · system overview (components + a simple diagram of how they talk) · repo layout (annotated tree) · per-component stack table · responsibility boundaries · code conventions (general + per-language) · a short decisions log (notable choices and why).
 
-**WORKFLOW.md**: a quick-map of the lifecycle (spec → branch → implement → test → verify → commit → PR → merge) · each step in detail · testing workflow · verification checklist before "done" · commit/PR/merge conventions · a "hard rules — non-negotiable" list.
+**WORKFLOW.md**: a quick-map of the lifecycle (spec → branch → implement → test → verify → commit → PR → merge) · each step in detail · **the planning section** (if OpenSpec or similar is installed, describe its cycle and the directory layout — never write "plans go in `docs/specs/`" when a tool owns the workflow) · testing workflow · verification checklist before "done" · commit/PR/merge conventions · a "hard rules — non-negotiable" list. When the project explicitly bans a historical location (e.g. `docs/specs/` after adopting OpenSpec), say so explicitly so it can't drift back in.
 
 **COMMANDS.md**: grouped command reference (Setup · Run · Test · Lint/Format · Database · Build · Deploy), with the exact invocation for each, separated by component and by native/Docker mode where both exist.
 
@@ -81,4 +84,5 @@ Keep them factual and scannable; these are reference docs, not prose essays. Cro
 - **Update, don't overwrite.** If a doc already exists, merge new/corrected info and keep what's still true.
 - **Don't invent.** If a command or value is unknown, ask — a wrong command in the docs is worse than a gap.
 - These docs are the project's source of truth for project-specific config; general engineering conventions live in the relevant skills, and where a doc here is more specific, it takes precedence.
+- **Respect installed planning tools.** When a tool like OpenSpec owns the planning workflow, this skill never creates a parallel `docs/specs/` and never describes one. The tool's cycle goes in `WORKFLOW.md` as the planning section. If both descriptions exist in the repo, the user has a drift problem — surface it and offer to fix it as part of this pass.
 - When invoked by another skill (e.g. django-normalize found no `docs/`), focus on capturing the current reality of the project accurately, so the calling workflow can rely on it.
