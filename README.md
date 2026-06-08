@@ -131,6 +131,29 @@ Categories with a single skill (`astro/astro/`, `tailwind/tailwindcss-v4/`, etc.
 | `agent-instructions` | `/agent-instructions` | Create or update a repo's `AGENTS.md` (canonical router into `docs/`) and `CLAUDE.md` (thin pointer + Claude-specific directives). |
 | `project-docs` | `/project-docs` | Create or update a project's `docs/` set (`ARCHITECTURE`, `WORKFLOW`, `COMMANDS`, `DESIGN`, `ONBOARDING`) by interviewing the user. Language- and framework-agnostic. |
 
+## External skills — installed per-project, not via this repo
+
+Some skills are maintained **outside** this repo and installed per-project via their own tooling. They are **not** part of `npx skills add` and have to be set up wherever they're used. They live here as a documented list, not as code.
+
+### `shadcn` — the official shadcn/ui Claude Code skill
+
+shadcn ships its own Claude Code skill bundled with assets, CLI references and rule files. The shadcn team maintains it and updates it as the library evolves. Install it per project (typically via the shadcn CLI — check the [shadcn docs](https://ui.shadcn.com) for the current install command); **don't vendor it in this repo** — the upstream version is the source of truth, and copying it here would freeze you at one commit.
+
+After installing it in a project that also uses this suite, append the following block at the end of the installed `SKILL.md` so the skill points to the surrounding decisions covered here. Drop any bullet whose skill isn't installed in that specific project — pointers to absent skills are noise.
+
+````markdown
+## Related skills in this project
+
+shadcn lives on top of a stack and a framework. These sibling skills cover the surrounding decisions so this skill doesn't have to. **They are pointers, not dependencies** — `npx shadcn@latest info` already exposes the `framework`, `tailwindVersion`, `isRSC`, `packageManager`, etc. of the current project; reach for the matching skill only when the surrounding decision actually requires it.
+
+- **`ui-ux`** — visual design upstream of any token: hierarchy, OKLCH palette with WCAG AA contrast, type and spacing scales, state coverage (loading/empty/error). Decide *what* the tokens should be here; encode them in Tailwind's `@theme` (see below); shadcn reads them through CSS variables.
+- **`tailwindcss-v4`** — the theming layer underneath: `@theme` block, custom utilities and variants, dark mode wiring, animation tokens, container queries. Always consults Context7 before assuming v4 syntax.
+- **`react-spa`** — when `framework` from `info` is **not** Next (typically Vite + React + TanStack Router): the `@/*` alias on both `tsconfig.json` and `vite.config.ts`, typed `import.meta.env.VITE_*`, the SPA `src/` layout that `src/components/ui/` plugs into, `main.tsx` essentials.
+- **`nextjs-patterns`** — when `framework` from `info` is `next` (App Router): when to add `"use client"` (`isRSC: true` from project info), route handlers, `NEXT_PUBLIC_*` env vars, dynamic imports for SSR-unsafe libs, metadata. shadcn components that use state/effects/handlers/browser APIs need the directive in Next; this skill covers the rules around it.
+
+For routing in a Vite SPA specifically, also see **`tanstack-router`** (file-based routing, type-safe `<Link>`, search params with Zod) — relevant when laying out pages that compose shadcn components into routes.
+````
+
 ## Adding a new skill
 
 1. Pick the category folder where the skill belongs (or create a new one if no existing category fits).
