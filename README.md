@@ -64,6 +64,13 @@ Conventions for building frontends. They trigger automatically when relevant.
 | `tailwindcss-v4` | Tailwind CSS v4 expert: CSS-first config via `@theme`, custom utilities/variants (`@utility`, `@custom-variant`), container queries, OKLCH colours, v3 → v4 migration. **Always consults Context7 before answering** — v4's API moved significantly. |
 | `copywriting` | Microcopy expert: CTAs, error messages, empty states, headlines, onboarding. Writes in the language of the surrounding interface, picks voice/tone, follows length-by-surface caps, avoids filler and faux-friendly chatter. |
 
+### Astro & HTTP — references (auto-invoked)
+
+| Skill | Description |
+|-------|-------------|
+| `astro` | Astro web framework expert: pages, components, layouts, content collections, islands (`client:*`), SSR adapters, View Transitions, `astro:assets`, the CLI. **Always consults Context7 before answering** (Astro moves between minor releases). Ensures the `@/*` path alias is configured (creates it if missing). Defers styling to tailwindcss-v4 and HTTP requests to fetch. |
+| `fetch` | HTTP requests with the Web Fetch API: request shape, response parsing, the status-vs-network-error distinction, AbortController for timeouts/cancellation, retries with exponential backoff, auth headers, server vs client context, the standard response envelope, TypeScript at the boundary. Works in browser, Astro frontmatter, Next Server Components, Node, edge runtimes. |
+
 ### Actions (slash-invoked)
 
 | Skill | Slash command | Description |
